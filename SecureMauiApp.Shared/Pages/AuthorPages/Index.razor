@@ -1,0 +1,102 @@
+﻿@page "/authors/index"
+
+@inject IHttpClientProvider httpClientProvider
+@inject IJSRuntime js
+<h3>Index</h3>
+
+
+    <NavLink href="authors/create" class="btn btn-success">Create Author</NavLink>
+
+
+
+
+@if (error is not null)
+{
+    <div class="text-danger text-xl-center" @onclick="() => error = null">@error</div>
+}
+
+@if (data?.Count == 0)
+{
+    <div class="text-black-50">
+        No data available
+    </div>
+}
+else
+{
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Photo</th>
+                <th>No of Books</th>
+                <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var author in data)
+            {
+                <tr>
+                    <td>
+                        @author.Id
+                    </td>
+                    <td>
+                        @author.AuthorName
+                    </td>
+                    <td>
+                        @if (author.Photo is not null)
+                        {
+                            <img src="@author.Photo" width="200" />
+                        }
+                    </td>
+                    <td>
+                        <details>
+                            <summary>Books : @author.Books.Count</summary>
+                            <ol>
+                                @foreach (var item in author.Books)
+                                {
+                                    <li>@item.Title [@item.Edition]</li>
+                                }
+                                
+                            </ol>
+                        </details>
+                    </td>
+                    <td>
+                        <span class="badge text-dark">@author.Books.Count</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
+
+@code {
+
+    List<Author>? data = [];
+    string url = "https://localhost:7209/api/Author";
+    HttpClient http;
+
+    string? error;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            //await js.InvokeVoidAsync("alert", "sample text");
+            http = httpClientProvider.GetHttpClient(url);
+            http.CancelPendingRequests();
+            data = await http.GetFromJsonAsync<List<Author>>("");
+        }
+        catch (Exception ex)
+        {
+           
+            error = ex.Message;
+        }
+
+    }
+
+
+}

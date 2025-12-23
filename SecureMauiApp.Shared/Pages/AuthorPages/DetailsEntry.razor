@@ -1,0 +1,53 @@
+﻿<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Pub date</th>
+            <th>Edition</th>
+            <th>Genre</th>
+            <th class="btn btn-success" @onclick="() => Books.Add(new ())">
+                Add
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Books)
+        {
+            <tr>
+                <td>
+                    <InputText @bind-Value="book.ISBN"></InputText>
+                    <ValidationMessage For="() => book.ISBN"></ValidationMessage>
+                </td>
+                <td>
+                    <InputText @bind-Value="book.Title"></InputText>
+                    <ValidationMessage For="() => book.Title"></ValidationMessage>
+                </td>
+                <td>
+                    <InputDate @bind-Value="book.PublishDate"></InputDate>
+                    <ValidationMessage For="() => book.PublishDate"></ValidationMessage>
+                </td>
+                <td>
+                    <InputNumber @bind-Value="book.Edition"></InputNumber>
+                    <ValidationMessage For="() => book.Edition"></ValidationMessage>
+                </td>
+                <td>
+                    <InputText @bind-Value="book.Genre"></InputText>
+                    <ValidationMessage For="() => book.Genre"></ValidationMessage>
+                </td>
+                <td class="btn btn-danger" @onclick="()=> Books.Remove(book)">
+                    Delete
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+@code {
+
+    [Parameter]
+    public IList<Book> Books { get; set; } = [];
+
+
+}

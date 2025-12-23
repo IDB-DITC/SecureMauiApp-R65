@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SecureMauiApp.Shared/SecureMauiApp.Shared.csproj" />
+  <Project Path="SecureMauiApp/SecureMauiApp.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

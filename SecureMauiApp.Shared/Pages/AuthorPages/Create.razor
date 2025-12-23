@@ -1,0 +1,113 @@
+﻿@page "/authors/create"
+@attribute [Authorize]
+<h3>Create</h3>
+
+<EditForm Model="Author" OnValidSubmit="SaveData">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+    <div>
+        <InputText @bind-Value="Author.AuthorName" class="form-control" DisplayName="Name" placeholder="Enter authors name"> </InputText>
+        <ValidationMessage For="()=> Author.AuthorName"></ValidationMessage>
+    </div>
+    <div>
+        <InputFile  OnChange="SelectFiles" accept="image/*" class="form-control" placeholder="Enter authors name"> </InputFile>
+        <img src="@Author.Photo" width="300" class="img-fluid img-thumbnail" />
+    </div>
+
+    <div>
+        <InputRadioGroup @bind-Value="Author.Gender">
+            @foreach (var gender in GenderValues)
+            {
+                <label>
+                    <InputRadio Value="gender" class="form-check-input"> </InputRadio>
+                    @gender
+                    <span class="row-gap-md-2"></span>
+                </label>
+               
+            }
+
+        </InputRadioGroup>
+        
+        <ValidationMessage For="() => Author.AuthorName"></ValidationMessage>
+    </div>
+
+    <div>
+        <label>
+            Active?
+            <InputCheckbox @bind-Value="Author.Active" class="form-check-input" DisplayName="Active?" />
+        </label>
+        
+    </div>
+
+    <DetailsEntry Books="Author.Books"> </DetailsEntry>
+
+
+    <button >Save</button>
+
+</EditForm>
+
+
+
+
+@code {
+    private List<string> GenderValues = new List<string> { "Male","Female", "Unspecified" };
+    [Inject]
+    IHttpClientProvider httpClientProvider { get; set; }
+
+    [Inject]
+    NavigationManager nav { get; set; }
+
+    [Inject]
+    ICustomAuthenticationStateProvider authState { get; set; }
+
+
+    public Author Author { get; set; } = new(){AuthorName ="Demo"};
+
+
+
+
+
+
+
+    private async Task SelectFiles(InputFileChangeEventArgs e)
+    {
+        IBrowserFile file = e.File;
+        var str = file.OpenReadStream();
+        var ms = new MemoryStream();
+        await str.CopyToAsync(ms);
+        var base64String = Convert.ToBase64String(ms.ToArray());
+        Author.Photo = $"data:{file.ContentType};base64,{base64String}";
+    }
+
+
+
+    async Task SaveData()
+    {
+        string token = await authState.GetTokenAsync();
+
+
+        var http =  httpClientProvider.GetHttpClient("https://localhost:7209/api/" );
+
+        http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+
+
+        var response = await http.PostAsJsonAsync<Author>("author", Author);
+        if (response.IsSuccessStatusCode)
+        {
+            nav.NavigateTo("/authors/index");
+        }
+    }
+
+
+
+    // VM Model;
+
+
+    // class VM
+    // {
+    //    public Author Author { get; set; }
+    //    public Book Book { get; set; }
+    // }
+
+}

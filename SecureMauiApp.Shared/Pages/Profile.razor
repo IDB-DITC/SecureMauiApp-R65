@@ -1,0 +1,34 @@
+﻿@page "/profile"
+<h3>Profile</h3>
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <dl>
+            <dt>Name:</dt>
+            <dd>
+                 @context.User.GetName()
+            </dd>
+            <dt>
+                Role
+            </dt>
+            <dd>
+                <ol>
+                    @foreach(var role in context.User.GetRoles())
+                    {
+                        <li>@role</li>
+                    }
+
+                </ol>
+              
+
+            </dd>
+        </dl>
+       
+    </Authorized>
+</AuthorizeView>
+<h1></h1>
+
+@code {
+
+}
